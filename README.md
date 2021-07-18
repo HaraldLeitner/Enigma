@@ -23,7 +23,7 @@ In this implementation all the key information is in the keygen file, so you don
 Each roll has 256! settings for the wiring and 256! / (256-53)! settings for the turnover notches. The last roll's turnover notches are unused, which permits 256! possibilities for this roll.
 This makes 1,1*10<sup>632</sup> combinations per roll and 8,6*10<sup>506</sup> for the last roll. This is a really big keyspace!
 ## Limits
-Modern cryptography uses typically a public algorithm and a secret key. One problem of the mechanical Enigma was a part of the key being hidden in the wiring of the rolls, which made it vulnerable.
+Modern cryptography typically uses a public algorithm and a secret key. One problem of the mechanical Enigma was a part of the key being hidden in the wiring of the rolls, which made it vulnerable.
 This part is solved in this implementation.
-The big advantage of modern cryptography is the public/private key exchange basing on the calculations of Diffie-Hellman. With this asymmetric key exchange you don't have to exchange a keyfile or a codebook.
-This implentation depends on exchanging a keyfile between sender and receiver, which makes it a strong encryption of little practical value:-)
+The big advantage of modern cryptography is the public/private key exchange based on the calculations of Diffie-Hellman. With this asymmetric key exchange you don't have to exchange a keyfile or a codebook.
+This implementation depends on exchanging a keyfile between sender and receiver, which makes it a strong encryption of little practical value:-)
