@@ -325,7 +325,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void Integrationtest()
         {
-            int msgSize = 65536;
+            int msgSize = 5 * 65536;    //bigger than buffersize:-)
             string keyname = "any.key";
             string msgFileName = "msg.file";
 
@@ -333,7 +333,7 @@ namespace UnitTestProject1
             for (int i = 0; i < msgSize; i++)
                 msg[i] = (byte)(i % 256);
 
-            File.WriteAllBytes("msg.file", msg);
+            File.WriteAllBytes(msgFileName, msg);
 
             Program.Main(new string[] { "keygen", "4", $"{keyname}"});
             Program.Main(new string[] { "enc", $"{msgFileName}", $"{keyname}" });

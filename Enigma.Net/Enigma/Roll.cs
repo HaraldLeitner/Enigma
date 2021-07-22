@@ -6,10 +6,10 @@ namespace Enigma
 {
     public class Roll
     {
-        private byte Position { get; set; }
-        private byte[] Transitions { get; }
-        private List<int> TurnOverIndices { get; }
-        private byte[] ReTransitions { get; }
+        private byte Position { get; set; }     //This is the actual position of this roll starting at 0
+        private byte[] Transitions { get; }     //This is the wiring of the roll: if Transitions[0] = 0x04 the value 0x00 will be mapped to 0x04
+        private List<int> TurnOverIndices { get; }  //While rolling after each char encryption the next roll will also rotate, if these indices contain Position
+        private byte[] ReTransitions { get; }   //Reverted transitionlist for decryption
 
         public Roll(byte[] transitions, List<int> turnOverIndices)
         {
@@ -30,9 +30,13 @@ namespace Enigma
             for (int i = 0; i < 256; i++)
             {
                 bool found = false;
-                for(int j = 0; j < 256; j++)
+                for (int j = 0; j < 256; j++)
                     if (Transitions[j] == i)
+                    {
                         found = true;
+                        break;
+                    }
+
                 if(!found)
                     throw new ConstraintException("Transitions not 1-1 complete");
             }
