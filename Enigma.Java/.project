@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>Enigma.Java</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>Enigma.properties</name>
+			<type>1</type>
+			<location>C:/Temp/Enigma.Java/src/main/Enigma.properties</location>
+		</link>
+		<link>
+			<name>src/main/BusinessLogic.java</name>
+			<type>1</type>
+			<location>C:/Temp/Enigma.Java/src/main/BusinessLogic.java</location>
+		</link>
+		<link>
+			<name>src/main/Enums.java</name>
+			<type>1</type>
+			<location>C:/Temp/Enigma.Java/src/main/Enums.java</location>
+		</link>
+		<link>
+			<name>src/main/Program.java</name>
+			<type>1</type>
+			<location>C:/Temp/Enigma.Java/src/main/Program.java</location>
+		</link>
+		<link>
+			<name>src/main/Roll.java</name>
+			<type>1</type>
+			<location>C:/Temp/Enigma.Java/src/main/Roll.java</location>
+		</link>
+	</linkedResources>
+</projectDescription>
