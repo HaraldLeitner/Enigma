@@ -24,8 +24,13 @@ namespace UnitTestProject1
 
         void Crypt(byte[] msg)
         {
-            encryptedMsg = BusinessLogicEncode.TransformByteArray(msg, Enums.Mode.Enc);
-            decryptedMsg = BusinessLogicDecode.TransformByteArray(encryptedMsg, Enums.Mode.Dec);
+            encryptedMsg = new byte[msg.Length];
+            decryptedMsg = new byte[msg.Length];
+
+            msg.CopyTo(encryptedMsg, 0);
+            BusinessLogicEncode.TransformByteArray(encryptedMsg, Enums.Mode.Enc);
+            encryptedMsg.CopyTo(decryptedMsg, 0);
+            BusinessLogicDecode.TransformByteArray(decryptedMsg, Enums.Mode.Dec);
         }
 
         [TestInitialize]

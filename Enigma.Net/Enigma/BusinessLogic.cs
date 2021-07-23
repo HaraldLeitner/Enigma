@@ -29,34 +29,27 @@ namespace Enigma
                     int readCount = 0;
                     while ((readCount = fileInStream.Read(buffer, 0, buffersize)) > 0)
                     {
-                        fileOutStream.Write(TransformByteArray(buffer, mode), 0, readCount);
+                        TransformByteArray(buffer, mode);
+                        fileOutStream.Write(buffer, 0, readCount);
                     }
                 }
             }
         }
 
-        public byte[] TransformByteArray(byte[] input, Enums.Mode mode)
+        public void TransformByteArray(byte[] input, Enums.Mode mode)
         {
-            byte[] output = new byte[input.Length];
-
-            for(int i  = 0; i < input.Length; i++)
+            for (int i = 0; i < input.Length; i++)
             {
-                byte outByte = input[i];
-
                 if (mode == Enums.Mode.Enc)
                     foreach (Roll roll in Rolls)
-                        outByte = roll.Enc(outByte);
+                        input[i] = roll.Enc(input[i]);
 
                 else if (mode == Enums.Mode.Dec)
                     foreach (Roll roll in RollsReverse)
-                        outByte = roll.Dec(outByte);
+                        input[i] = roll.Dec(input[i]);
 
-
-                output[i] = outByte;
                 RollOn();
             }
-
-            return output;
         }
 
         private void RollOn()
