@@ -30,32 +30,28 @@ public class BusinessLogic {
        
         while ((readCount = fileInStream.read(buffer, 0, buffersize)) > 0) 
         {
-            fileOutStream.write(TransformByteArray(buffer, mode), 0, readCount);
+        	TransformByteArray(buffer, mode);        	
+            fileOutStream.write(buffer, 0, readCount);
         }
 
         fileInStream.close();
         fileOutStream.close();
     }
 
-    public byte[] TransformByteArray(byte[] input, Enums.Mode mode) {
-        byte[] output = new byte[input.length];
+    public void TransformByteArray(byte[] input, Enums.Mode mode) {
 
         for (int i = 0; i < input.length; i++) {
-            byte outByte = input[i];
 
             if (mode == Enums.Mode.Enc)
                 for (Roll roll : Rolls)
-                    outByte = roll.Enc(outByte);
+                	input[i] = roll.Enc(input[i]);
 
             else if (mode == Enums.Mode.Dec)
                 for (Roll roll : RollsReverse)
-                    outByte = roll.Dec(outByte);
-
-            output[i] = outByte;
+                	input[i] = roll.Dec(input[i]);
+            
             RollOn();
         }
-
-        return output;
     }
 
     private void RollOn() {

@@ -32,8 +32,10 @@ class UnitTest {
 	byte[] decryptedMsg;
 
 	void Crypt(byte[] msg) {
-		encryptedMsg = BusinessLogicEncode.TransformByteArray(msg, Enums.Mode.Enc);
-		decryptedMsg = BusinessLogicDecode.TransformByteArray(encryptedMsg, Enums.Mode.Dec);
+		encryptedMsg = msg.clone();
+		BusinessLogicEncode.TransformByteArray(encryptedMsg, Enums.Mode.Enc);
+		decryptedMsg = encryptedMsg.clone();
+		BusinessLogicDecode.TransformByteArray(decryptedMsg, Enums.Mode.Dec);
 	}
 
 	@BeforeEach
