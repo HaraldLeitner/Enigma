@@ -21,7 +21,7 @@ public class Roll
             ReTransitions[Transitions[i + 128] + 128] = (byte) i;
     }
 
-    public void CheckInput() throws Exception {
+    public void CheckInput(int transitionCount) throws Exception {
         if (Transitions.length != 256)
             throw new Exception("Wrong Transition length ");
 
@@ -39,7 +39,7 @@ public class Roll
                 throw new Exception("Transitions not 1-1 complete. Problem at " + i);
         }
 
-        if (TurnOverIndices.size() != 53)
+        if (TurnOverIndices.size() != transitionCount)
             throw new Exception("Wrong TurnOverIndices length ");
 
         Collections.sort(TurnOverIndices);

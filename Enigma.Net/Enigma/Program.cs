@@ -72,7 +72,7 @@ namespace Enigma
             }
 
             foreach (Roll roll in Rolls)
-                roll.CheckInput();
+                roll.CheckInput(TransitionCount);
         }
 
         private static void Keygen(int rollCount)

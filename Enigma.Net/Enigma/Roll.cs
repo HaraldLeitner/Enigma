@@ -22,7 +22,7 @@ namespace Enigma
                 ReTransitions[Transitions[i]] = (byte)i;
         }
 
-        public void CheckInput()
+        public void CheckInput(int TransitionCount)
         {
             if (Transitions.Length != 256)
                 throw new ArgumentOutOfRangeException("Wrong Transition length ");
@@ -41,7 +41,7 @@ namespace Enigma
                     throw new ConstraintException("Transitions not 1-1 complete");
             }
 
-            if (TurnOverIndices.Count != 53)
+            if (TurnOverIndices.Count != TransitionCount)
                 throw new ArgumentOutOfRangeException("Wrong TurnOverIndices length ");
 
             TurnOverIndices.Sort();

@@ -89,7 +89,7 @@ public class Program {
         }
 
         for (Roll roll : Rolls)
-            roll.CheckInput();
+            roll.CheckInput(TransitionCount);
     }
 
     private static void Keygen(int rollCount) throws Exception {
