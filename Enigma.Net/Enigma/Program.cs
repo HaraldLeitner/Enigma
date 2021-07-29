@@ -38,9 +38,9 @@ namespace Enigma
             CreateRolls();
 
             if (args[0].ToLower() == "enc")
-                Mode = Enums.Mode.Enc;
+                Mode = Enums.Mode.Encode;
             else if (args[0].ToLower() == "dec")
-                Mode = Enums.Mode.Dec;
+                Mode = Enums.Mode.Decode;
             else
                 throw new ArgumentOutOfRangeException("Undefined Encryption Mode.");
 

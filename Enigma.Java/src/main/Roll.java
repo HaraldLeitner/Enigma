@@ -49,11 +49,11 @@ public class Roll
                 throw new Exception("Turnoverindizes has doubles");
     }
 
-    public byte Enc(byte input) {
+    public byte Encrypt(byte input) {
         return Transitions[((input + Position + 128)%256)];
     }
 
-    public byte Dec(byte input) {
+    public byte Decrypt(byte input) {
         return (byte) (ReTransitions[input + 128] - Position);
     }
 

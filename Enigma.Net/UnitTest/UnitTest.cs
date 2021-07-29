@@ -28,9 +28,9 @@ namespace UnitTestProject1
             decryptedMsg = new byte[msg.Length];
 
             msg.CopyTo(encryptedMsg, 0);
-            BusinessLogicEncode.TransformByteArray(encryptedMsg, Enums.Mode.Enc);
+            BusinessLogicEncode.TransformByteArray(encryptedMsg, Enums.Mode.Encode);
             encryptedMsg.CopyTo(decryptedMsg, 0);
-            BusinessLogicDecode.TransformByteArray(decryptedMsg, Enums.Mode.Dec);
+            BusinessLogicDecode.TransformByteArray(decryptedMsg, Enums.Mode.Decode);
         }
 
         [TestInitialize]

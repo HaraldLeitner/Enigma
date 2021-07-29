@@ -38,17 +38,24 @@ namespace Enigma
 
         public void TransformByteArray(byte[] input, Enums.Mode mode)
         {
-            for (int i = 0; i < input.Length; i++)
+            if (mode == Enums.Mode.Encode)
             {
-                if (mode == Enums.Mode.Enc)
+                for (int i = 0; i < input.Length; i++)
+                {
                     foreach (Roll roll in Rolls)
-                        input[i] = roll.Enc(input[i]);
+                        input[i] = roll.Encrypt(input[i]);
+                    RollOn();
+                }
+            }
 
-                else if (mode == Enums.Mode.Dec)
+            if (mode == Enums.Mode.Decode)
+            {
+                for (int i = 0; i < input.Length; i++)
+                {
                     foreach (Roll roll in RollsReverse)
-                        input[i] = roll.Dec(input[i]);
-
-                RollOn();
+                        input[i] = roll.Decrypt(input[i]);
+                    RollOn();
+                }
             }
         }
 

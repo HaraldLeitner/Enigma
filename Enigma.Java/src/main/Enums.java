@@ -4,8 +4,8 @@ public class Enums
 {
     public enum Mode 
     {
-        Enc, 
-        Dec
+        Encode, 
+        Decode
     };
 
 }

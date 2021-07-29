@@ -41,9 +41,9 @@ public class Program {
         CreateRolls();
 
         if (args[0].compareToIgnoreCase("enc") == 0)
-            Mode = Enums.Mode.Enc;
+            Mode = Enums.Mode.Encode;
         else if (args[0].compareToIgnoreCase("dec") == 0)
-            Mode = Enums.Mode.Dec;
+            Mode = Enums.Mode.Decode;
         else
             throw new Exception("Undefined Encryption Mode.");
 

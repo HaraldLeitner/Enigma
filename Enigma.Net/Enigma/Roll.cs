@@ -50,12 +50,12 @@ namespace Enigma
                     throw new ConstraintException("Turnoverindizes has doubles");
         }
 
-        public byte Enc(byte input)
+        public byte Encrypt(byte input)
         {
             return Transitions[(byte)(input + Position)];
         }
 
-        public byte Dec(byte input)
+        public byte Decrypt(byte input)
         {
             return (byte)(ReTransitions[input] - Position);
         }
