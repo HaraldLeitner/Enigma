@@ -1,8 +1,8 @@
 class Roll:
 
-    def __init__(self, transitions, turnOverIndices):
+    def __init__(self, transitions, turn_over_indices):
         self._transitions = transitions
-        self._turn_over_indices = turnOverIndices
+        self._turn_over_indices = turn_over_indices
         self._re_transitions = bytearray(256)
 
         for x in self._transitions:
@@ -10,10 +10,9 @@ class Roll:
 
         self._position = 0
 
-
-    def check_input(self, turnoverIndicesCount):
+    def check_input(self, turnover_indices_count):
         if len(self._transitions) != 256:
-            raise ValueError ("Wrong Transition length ")
+            raise ValueError("Wrong Transition length ")
 
         for i in range(256):
             found = 0
@@ -23,22 +22,21 @@ class Roll:
                     continue
 
             if not found:
-                raise ValueError ("Transitions not 1-1 complete");
+                raise ValueError("Transitions not 1-1 complete")
 
+        if len(self._turn_over_indices) != turnover_indices_count:
+            raise ValueError("Wrong TurnOverIndices length ")
 
-        if len(self._turn_over_indices) != turnoverIndicesCount:
-            raise ValueError("Wrong TurnOverIndices length ");
+        for i in range(len(self._turn_over_indices) - 1):
+            if self._turn_over_indices[i] == self._turn_over_indices[i + 1]:
+                raise ValueError("Turnoverindizes has doubles")
 
-        for i in range (len(self._turn_over_indices) - 1):
-            if self._turn_over_indices[i] == self._turn_over_indices[i+1]:
-                raise ValueError("Turnoverindizes has doubles");
+    def encrypt(self, buffer, index):
+        buffer[index] = self._transitions[(buffer[index] + self._position) & 0xff]
 
-    def encrypt(self, input, index):
-        input[index] = self._transitions[int((input[index] + self._position) % 256)]
-
-    def decrypt(self, input, index):
-        input[index] = self._re_transitions[int(input[index])] - self._position
+    def decrypt(self, buffer, index):
+        buffer[index] = (self._re_transitions[int(buffer[index])] - self._position) & 0xff
 
     def roll_on(self):
-        ++self._position
+        self._position = (self._position + 1) & 0xff
         return self._turn_over_indices.count(self._position)

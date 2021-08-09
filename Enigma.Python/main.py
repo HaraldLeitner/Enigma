@@ -43,8 +43,8 @@ class Program:
             raise Exception("Undefined Encryption Mode.")
 
         self.create_rolls()
-        BusinessLogic(self._rolls).transform_file(self._inputFilename, self._inputFilename + '.' + self._mode.name, self._mode)
-
+        BusinessLogic(self._rolls).transform_file(self._inputFilename, self._inputFilename + '.' + self._mode.name,
+                                                  self._mode)
 
     def keygen(self, roll_count):
         if roll_count < 4:
@@ -111,6 +111,7 @@ class Program:
 
         for roll in self._rolls:
             roll.check_input(self._transitionCount)
+
 
 if __name__ == '__main__':
     Program().main()

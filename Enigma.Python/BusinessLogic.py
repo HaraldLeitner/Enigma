@@ -4,6 +4,8 @@ from Enums import Mode
 class BusinessLogic:
     def __init__(self, rolls):
         self._rolls = rolls
+        self._rolls_reverse = rolls.copy()
+        self._rolls_reverse.reverse()
 
     def transform_file(self, infile, outfile, mode):
         buffersize = 65536
@@ -22,15 +24,15 @@ class BusinessLogic:
         out_file.close()
 
     def transform_buffer(self, buffer, mode):
-        if mode == Mode.ENC :
+        if mode == Mode.ENC:
             for i in range(len(buffer)):
                 for roll in self._rolls:
                     roll.encrypt(buffer, i)
                 self.roll_on()
 
-        if mode == Mode.DEC :
+        if mode == Mode.DEC:
             for i in range(len(buffer)):
-                for roll in self._rolls:
+                for roll in self._rolls_reverse:
                     roll.decrypt(buffer, i)
                 self.roll_on()
 
@@ -38,6 +40,3 @@ class BusinessLogic:
         for roll in self._rolls:
             if not roll.roll_on():
                 break
-
-
-
