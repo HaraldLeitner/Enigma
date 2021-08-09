@@ -187,7 +187,7 @@ namespace UnitTestProject1
                 Crypt(new byte[] { (byte)i, (byte)((i + 1) % 256) });
 
                 Assert.AreEqual((i + 2) % 256, encryptedMsg[0]);
-                Assert.AreEqual((i + 2) % 256, encryptedMsg[0]);
+                Assert.AreEqual((i + 4) % 256, encryptedMsg[1]);
 
                 Assert.AreEqual(i, decryptedMsg[0]);
                 Assert.AreEqual((i + 1) % 256, decryptedMsg[1]);
