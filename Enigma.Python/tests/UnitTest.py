@@ -1,8 +1,10 @@
+import os
 import unittest
 
 from BusinessLogic import BusinessLogic
 from Enums import Mode
 from Roll import Roll
+from main import Program
 
 
 class MyTestCase(unittest.TestCase):
@@ -127,7 +129,78 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual(i, self.decrypted_message[0])
             self.assertEqual((i + 1) & 0xff, self.decrypted_message[1])
 
+    def test_three_byte_two_roll_turnover(self):
+        for i in range(256):
+            self.init_business_logic([self.trans_linear, self.trans_linear], [range(256), range(256)])
+            self.crypt([i, (i + 1) & 0xff, (i + 2) & 0xff])
+            self.assertEqual(i, self.encrypted_message[0])
+            self.assertEqual((i + 3) & 0xff, self.encrypted_message[1])
+            self.assertEqual((i + 6) & 0xff, self.encrypted_message[2])
 
+            self.assertEqual(i, self.decrypted_message[0])
+            self.assertEqual((i + 1) & 0xff, self.decrypted_message[1])
+            self.assertEqual((i + 2) & 0xff, self.decrypted_message[2])
+
+    def test_three_byte_two_different_roll_turnover(self):
+        self.init_business_logic([self.trans_linear, self.trans_shift_1], [range(4), range(4)])
+        self.crypt([7, 107])
+        self.assertEqual(8, self.encrypted_message[0])
+        self.assertEqual(110, self.encrypted_message[1])
+
+        self.assertEqual(7, self.decrypted_message[0])
+        self.assertEqual(107, self.decrypted_message[1])
+
+    def test_three_byte_two_different_roll_turnover3(self):
+        self.init_business_logic([self.trans_linear, self.trans_linear_invert], [range(4), range(4)])
+        self.crypt([7, 107])
+        self.assertEqual(248, self.encrypted_message[0])
+        self.assertEqual(146, self.encrypted_message[1])
+
+        self.assertEqual(7, self.decrypted_message[0])
+        self.assertEqual(107, self.decrypted_message[1])
+
+    def test_real_live(self):
+        msg_size = 65536
+        msg = bytearray(msg_size)
+        for i in range(msg_size):
+            msg[i] = i & 0xff
+
+        self.init_business_logic([self.trans_linear, self.trans_linear_invert, self.trans_shift_1, self.trans_shift_2],
+                                 [[0, 22, 44, 100], [11, 44, 122, 200], [33, 77, 99, 222], [55, 67, 79, 240]])
+
+        self.crypt(msg)
+        for i in range(msg_size):
+            self.assertEqual(msg[i], self.decrypted_message[i])
+
+    def test_integration(self):
+        key_file_name = "any.key"
+        msg_file_name = "msg.file"
+
+        msg_size = 65536 * 5
+        msg = bytearray(msg_size)
+        for i in range(msg_size):
+            msg[i] = i & 0xff
+
+        if os.path.exists(msg_file_name):
+            os.remove(msg_file_name)
+
+        file = open(msg_file_name, 'wb')
+        file.write(msg)
+        file.close()
+
+        program = Program(55)
+        program.run_main("keygen", 5, key_file_name)
+        program.run_main("enc", msg_file_name, key_file_name)
+        program.run_main("dec", msg_file_name + ".enc", key_file_name)
+
+        file = open(msg_file_name + ".enc.dec", 'rb')
+        decypted = file.read()
+        file.close()
+
+        for i in range(msg_size):
+            self.assertEqual(msg[i], decypted[i])
+
+        self.assertEqual(msg_size, len(decypted))
 
 if __name__ == '__main__':
     unittest.main()

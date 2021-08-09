@@ -10,7 +10,7 @@ from Roll import Roll
 
 
 class Program:
-    def __init__(self):
+    def __init__(self, transitioncount=0):
         self._mode = None
         self._rolls = []
         self._inputFilename = None
@@ -18,7 +18,10 @@ class Program:
         self._transitionCount = None
         config = ConfigParser()
         config.read("enigma.ini")
-        self._transitionCount = config.getint("DEFAULT", "TransitionCount")
+        if transitioncount < 1:
+            self._transitionCount = config.getint("DEFAULT", "TransitionCount")
+        else:
+            self._transitionCount = transitioncount
 
     def main(self):
         if len(sys.argv) != 4:
@@ -27,17 +30,21 @@ class Program:
             print("Decrypt a file with 'dec a.txt key.file'")
             exit(1)
 
-        self._keyFilename = sys.argv[3]
+        self.run_main(sys.argv[1], sys.argv[2], sys.argv[3])
 
-        if sys.argv[1] == "keygen":
-            self.keygen(int(sys.argv[2]))
-            exit(0)
+    def run_main(self, arg1, arg2, arg3):
 
-        self._inputFilename = sys.argv[2]
+        self._keyFilename = arg3
 
-        if sys.argv[1].lower() == 'enc':
+        if arg1 == "keygen":
+            self.keygen(int(arg2))
+            return
+
+        self._inputFilename = arg2
+
+        if arg1.lower() == 'enc':
             self._mode = Mode.ENC
-        elif sys.argv[1].lower() == 'dec':
+        elif arg1 == 'dec':
             self._mode = Mode.DEC
         else:
             raise Exception("Undefined Encryption Mode.")
