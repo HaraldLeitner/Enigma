@@ -10,7 +10,7 @@ from Roll import Roll
 
 
 class Program:
-    def __init__(self, transitioncount=0):
+    def __init__(self, transition_count=0):
         self._mode = None
         self._rolls = []
         self._inputFilename = None
@@ -18,10 +18,10 @@ class Program:
         self._transitionCount = None
         config = ConfigParser()
         config.read("enigma.ini")
-        if transitioncount < 1:
+        if transition_count < 1:
             self._transitionCount = config.getint("DEFAULT", "TransitionCount")
         else:
-            self._transitionCount = transitioncount
+            self._transitionCount = transition_count
 
     def main(self):
         if len(sys.argv) != 4:
@@ -101,20 +101,20 @@ class Program:
         return 1
 
     def create_rolls(self):
-        roll_keylength = 256 + self._transitionCount
+        roll_key_length = 256 + self._transitionCount
         file = open(self._keyFilename, 'rb')
         key = file.read()
         file.close()
 
-        if len(key) % roll_keylength:
-            raise Exception('Invalid Keysize')
+        if len(key) % roll_key_length:
+            raise Exception('Invalid key_size')
 
-        rollcount = int(len(key) / roll_keylength)
+        roll_count = int(len(key) / roll_key_length)
 
-        for rollNumber in range(rollcount):
-            self._rolls.append(Roll(key[rollNumber * roll_keylength: rollNumber * roll_keylength + 256],
+        for rollNumber in range(roll_count):
+            self._rolls.append(Roll(key[rollNumber * roll_key_length: rollNumber * roll_key_length + 256],
                                     key[
-                                    rollNumber * roll_keylength + 256: rollNumber * roll_keylength + 256 + self._transitionCount]))
+                                    rollNumber * roll_key_length + 256: rollNumber * roll_key_length + 256 + self._transitionCount]))
 
         for roll in self._rolls:
             roll.check_input(self._transitionCount)

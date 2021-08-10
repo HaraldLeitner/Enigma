@@ -191,7 +191,8 @@ class MyTestCase(unittest.TestCase):
         program = Program(55)
         program.run_main("keygen", 5, key_file_name)
         program.run_main("enc", msg_file_name, key_file_name)
-        program.run_main("dec", msg_file_name + ".enc", key_file_name)
+        program2 = Program(55)
+        program2.run_main("dec", msg_file_name + ".enc", key_file_name)
 
         file = open(msg_file_name + ".enc.dec", 'rb')
         decypted = file.read()
@@ -201,6 +202,7 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual(msg[i], decypted[i])
 
         self.assertEqual(msg_size, len(decypted))
+
 
 if __name__ == '__main__':
     unittest.main()

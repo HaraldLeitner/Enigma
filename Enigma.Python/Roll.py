@@ -29,7 +29,7 @@ class Roll:
 
         for i in range(len(self._turn_over_indices) - 1):
             if self._turn_over_indices[i] == self._turn_over_indices[i + 1]:
-                raise ValueError("Turnoverindizes has doubles")
+                raise ValueError("turn_over_indices has doubles")
 
     def encrypt(self, buffer, index):
         buffer[index] = self._transitions[(buffer[index] + self._position) & 0xff]
