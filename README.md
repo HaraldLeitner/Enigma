@@ -17,7 +17,7 @@ Encrypt a file using 'enc a.txt key.file'.
 Decrypt a file using 'dec a.txt.enc key.file'.
 Since you generate a new set of rolls with every keygen, there is no starting position for these rolls. 
 In the mechanical machine you have secret roll wiring and changing secret starting positions. The starting positions were noted in the code book. 
-When decryption started in Bletchley Park, the British Army had some machines, and so a valuable part of the key. It was their job to guess the starting positions, since they had no code book.
+When decryption started in Bletchley Park, the British Army had some Enigma machines, and so a valuable part of the key. It was their job to guess the starting positions, since they had no code book.
 In this implementation all the key information is in the keygen file, so you don't need a code book or starting position.
 ## Key space
 Each roll has 256! settings for the wiring and 256! / (256-53)! settings for the turnover notches. The last roll's turnover notches are unused, which permits 256! possibilities for this roll.
