@@ -25,17 +25,17 @@ class UnitTest {
 	byte[] transShift1 = new byte[256]; // 'a' is mapped to 'b' etc
 	byte[] transShift2 = new byte[256]; // 'a' is mapped to 'c' etc
 
-	private BusinessLogic BusinessLogicEncode;
-	private BusinessLogic BusinessLogicDecode;
+	private BusinessLogic businessLogicEncode;
+	private BusinessLogic businessLogicDecode;
 
 	byte[] encryptedMsg;
 	byte[] decryptedMsg;
 
 	void Crypt(byte[] msg) {
 		encryptedMsg = msg.clone();
-		BusinessLogicEncode.TransformByteArray(encryptedMsg, Enums.Mode.Enc);
+		businessLogicEncode.TransformByteArray(encryptedMsg, Enums.Mode.Encode);
 		decryptedMsg = encryptedMsg.clone();
-		BusinessLogicDecode.TransformByteArray(decryptedMsg, Enums.Mode.Dec);
+		businessLogicDecode.TransformByteArray(decryptedMsg, Enums.Mode.Decode);
 	}
 
 	@BeforeEach
@@ -66,8 +66,8 @@ class UnitTest {
 
 		}
 
-		BusinessLogicEncode = new BusinessLogic(rollsEncrypt);
-		BusinessLogicDecode = new BusinessLogic(rollsDecrypt); // need a second, because the enc BusinessLogic has
+		businessLogicEncode = new BusinessLogic(rollsEncrypt);
+		businessLogicDecode = new BusinessLogic(rollsDecrypt); // need a second, because the enc BusinessLogic has
 																// turned over rolls
 	}
 

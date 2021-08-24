@@ -8,33 +8,33 @@ import java.util.Collections;
 import java.util.List;
 
 public class BusinessLogic {
-	private List<Roll> Rolls;
-	private List<Roll> RollsReverse;
+	private List<Roll> rolls;
+	private List<Roll> rollsReverse;
 
 	public BusinessLogic(List<Roll> rolls) {
 
-		Rolls = rolls;
+		this.rolls = rolls;
 
-		RollsReverse = new ArrayList<Roll>(rolls);
-		Collections.reverse(RollsReverse);
+		rollsReverse = new ArrayList<Roll>(rolls);
+		Collections.reverse(rollsReverse);
 	}
 
 	public void TransformFile(String inputFfilename, String outputFilename, Enums.Mode mode) throws IOException {
 		final int buffersize = 65536;
 
-		FileInputStream fileInStream = new FileInputStream(inputFfilename);
-		FileOutputStream fileOutStream = new FileOutputStream(outputFilename);
+		try (
 
-		byte[] buffer = new byte[buffersize];
-		int readCount = 0;
+				FileInputStream fileInStream = new FileInputStream(inputFfilename);
+				FileOutputStream fileOutStream = new FileOutputStream(outputFilename);) {
 
-		while ((readCount = fileInStream.read(buffer, 0, buffersize)) > 0) {
-			TransformByteArray(buffer, mode);
-			fileOutStream.write(buffer, 0, readCount);
+			byte[] buffer = new byte[buffersize];
+			int readCount = 0;
+
+			while ((readCount = fileInStream.read(buffer, 0, buffersize)) > 0) {
+				TransformByteArray(buffer, mode);
+				fileOutStream.write(buffer, 0, readCount);
+			}
 		}
-
-		fileInStream.close();
-		fileOutStream.close();
 	}
 
 	public void TransformByteArray(byte[] input, Enums.Mode mode) {
@@ -42,7 +42,7 @@ public class BusinessLogic {
 		if (mode == Enums.Mode.Encode) {
 
 			for (int i = 0; i < input.length; i++) {
-				for (Roll roll : Rolls)
+				for (Roll roll : rolls)
 					input[i] = roll.Encrypt(input[i]);
 
 				RollOn();
@@ -51,7 +51,7 @@ public class BusinessLogic {
 
 		if (mode == Enums.Mode.Decode) {
 			for (int i = 0; i < input.length; i++) {
-				for (Roll roll : RollsReverse)
+				for (Roll roll : rollsReverse)
 					input[i] = roll.Decrypt(input[i]);
 
 				RollOn();
@@ -60,7 +60,7 @@ public class BusinessLogic {
 	}
 
 	private void RollOn() {
-		for (Roll roll : Rolls) {
+		for (Roll roll : rolls) {
 			if (!roll.RollOn())
 				break;
 		}

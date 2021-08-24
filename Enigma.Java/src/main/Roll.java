@@ -6,30 +6,33 @@ import java.util.List;
 
 public class Roll
  {
-    private int Position;          //This is the actual position of this roll starting at 0
-    private byte[] Transitions;     //This is the wiring of the roll: if Transitions[0] = 0x04 the value 0x00 will be mapped to 0x04
-    private List<Integer> TurnOverIndices;  //While rolling after each char encryption the next roll will also rotate, if these indices contain Position 
-    private byte[] ReTransitions;   //Reverted transitionlist for decryption
+    private int position;          //This is the actual position of this roll starting at 0
+    private byte[] transitions;     //This is the wiring of the roll: if Transitions[0] = 0x04 the value 0x00 will be mapped to 0x04
+    private List<Integer> turnOverIndices;  //While rolling after each char encryption the next roll will also rotate, if these indices contain Position 
+    private byte[] reTransitions;   //Reverted transitionlist for decryption
+    private static final int  UNSIGNED_BYTE_MAX = 256;	
+    private static final int  UNSIGNED_BYTE_OFFSET = 128;	//to calculate with unsigned bytes, this offset moves the range to [0,255]
+    
 
     public Roll(byte[] transitions, List<Integer> turnOverIndices) {
-        Transitions = transitions;
-        TurnOverIndices = turnOverIndices;
-        Position = 0;
+        this.transitions = transitions;
+        this.turnOverIndices = turnOverIndices;
+        position = 0;
 
-        ReTransitions = new byte[256];
-        for (int i = -128; i < 128; i++)
-            ReTransitions[Transitions[i + 128] + 128] = (byte) i;
+        reTransitions = new byte[UNSIGNED_BYTE_MAX];
+        for (int i = -UNSIGNED_BYTE_OFFSET; i < UNSIGNED_BYTE_OFFSET; i++)
+            reTransitions[transitions[i + UNSIGNED_BYTE_OFFSET] + UNSIGNED_BYTE_OFFSET] = (byte) i;
     }
 
     public void CheckInput(int transitionCount) throws Exception {
-        if (Transitions.length != 256)
+        if (transitions.length != UNSIGNED_BYTE_MAX)
             throw new Exception("Wrong Transition length ");
 
-        for (int i = -128; i < 128; i++) {
+        for (int i = -UNSIGNED_BYTE_OFFSET; i < UNSIGNED_BYTE_OFFSET; i++) {
             boolean found = false;
-            for (int j = 0; j < 256; j++)
+            for (int j = 0; j < UNSIGNED_BYTE_MAX; j++)
             {
-                if (Transitions[j] == i)
+                if (transitions[j] == i)
                 {
                     found = true;   
                     break;
@@ -39,26 +42,26 @@ public class Roll
                 throw new Exception("Transitions not 1-1 complete. Problem at " + i);
         }
 
-        if (TurnOverIndices.size() != transitionCount)
+        if (turnOverIndices.size() != transitionCount)
             throw new Exception("Wrong TurnOverIndices length ");
 
-        Collections.sort(TurnOverIndices);
+        Collections.sort(turnOverIndices);
 
-        for (int i = 0; i < TurnOverIndices.size() - 1; i++)
-            if (TurnOverIndices.get(i) == TurnOverIndices.get(i + 1))
+        for (int i = 0; i < turnOverIndices.size() - 1; i++)
+            if (turnOverIndices.get(i) == turnOverIndices.get(i + 1))
                 throw new Exception("Turnoverindizes has doubles");
     }
 
     public byte Encrypt(byte input) {
-        return Transitions[((input + Position + 128)%256)];
+        return transitions[((input + position + UNSIGNED_BYTE_OFFSET)%UNSIGNED_BYTE_MAX)];
     }
 
     public byte Decrypt(byte input) {
-        return (byte) (ReTransitions[input + 128] - Position);
+        return (byte) (reTransitions[input + UNSIGNED_BYTE_OFFSET] - position);
     }
 
     public boolean RollOn() {
-        Position = (Position + 1) % 256;
-        return TurnOverIndices.contains(Position);
+        position = (position + 1) % UNSIGNED_BYTE_MAX;
+        return turnOverIndices.contains(position);
     }
 }

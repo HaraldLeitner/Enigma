@@ -7,148 +7,145 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
 public class Program {
-    private static List<Roll> Rolls;
-    private static Enums.Mode Mode;
-    private static String KeyFilename;
-    private static String InputFileName;
-    private static int TransitionCount;
+	private static List<Roll> rolls;
+	private static Enums.Mode mode;
+	private static String keyFilename;
+	private static String inputFileName;
+	private static int transitionCount;
 
-    public static void main(String[] args) throws Exception {
-        if (args.length != 3) {
-            System.out.println("Generate key with 'keygen x key.file' where x > 3 is the number of rolls.");
-            System.out.println("Encrypt a file with 'enc a.txt key.file'");
-            System.out.println("Decrypt a file with 'dec a.txt key.file'");
+	public static void main(String[] args) throws Exception {
+		if (args.length != 3) {
+			System.out.println("Generate key with 'keygen x key.file' where x > 3 is the number of rolls.");
+			System.out.println("Encrypt a file with 'enc a.txt key.file'");
+			System.out.println("Decrypt a file with 'dec a.txt key.file'");
 
-            return;
-        }
+			return;
+		}
 
-        ReadProperties();
+		ReadProperties();
 
-        KeyFilename = args[2];
+		keyFilename = args[2];
 
-        if (args[0].compareToIgnoreCase("keygen") == 0) {
-            Keygen(Integer.parseInt(args[1]));
-            return;
-        }
+		if (args[0].compareToIgnoreCase("keygen") == 0) {
+			Keygen(Integer.parseInt(args[1]));
+			return;
+		}
 
-        InputFileName = args[1];
-        CreateRolls();
+		inputFileName = args[1];
+		CreateRolls();
 
-        if (args[0].compareToIgnoreCase("enc") == 0)
-            Mode = Enums.Mode.Encode;
-        else if (args[0].compareToIgnoreCase("dec") == 0)
-            Mode = Enums.Mode.Decode;
-        else
-            throw new Exception("Undefined Encryption Mode.");
+		if (args[0].compareToIgnoreCase("enc") == 0)
+			mode = Enums.Mode.Encode;
+		else if (args[0].compareToIgnoreCase("dec") == 0)
+			mode = Enums.Mode.Decode;
+		else
+			throw new Exception("Undefined Encryption Mode.");
 
-        BusinessLogic businessLogic = new BusinessLogic(Rolls);
+		BusinessLogic businessLogic = new BusinessLogic(rolls);
 
-        businessLogic.TransformFile(InputFileName, InputFileName + "." + Mode, Mode);
-    }
+		businessLogic.TransformFile(inputFileName, inputFileName + "." + mode, mode);
+	}
 
-    private static void ReadProperties() throws FileNotFoundException, IOException {
-        Properties prop = new Properties();
-        
-        prop.load(new FileInputStream("Enigma.properties"));
+	private static void ReadProperties() throws FileNotFoundException, IOException {
+		Properties prop = new Properties();
 
-        TransitionCount = Integer.parseInt(prop.getProperty("TransitionCount"));
-    }
+		prop.load(new FileInputStream("Enigma.properties"));
 
-    private static void CreateRolls() throws Exception {
-        Rolls = new ArrayList<Roll>();
+		transitionCount = Integer.parseInt(prop.getProperty("TransitionCount"));
+	}
 
-        int rollKeylength = 256 + TransitionCount;
+	private static void CreateRolls() throws Exception {
+		rolls = new ArrayList<Roll>();
 
-        byte[] definition = new byte[(int) new File(KeyFilename).length()];
-        FileInputStream fileInputStream = new FileInputStream(KeyFilename);
-        fileInputStream.read(definition);
-        fileInputStream.close();
+		int rollKeylength = 256 + transitionCount;
 
-        if (definition.length % rollKeylength > 0)
-            throw new Exception("Invalid Keysize");
+		byte[] definition = new byte[(int) new File(keyFilename).length()];
 
-        int rollCount = definition.length / rollKeylength;
+		try (FileInputStream fileInputStream = new FileInputStream(keyFilename);) {
+			fileInputStream.read(definition);
+		}
 
-        for (int rollNumber = 0; rollNumber < rollCount; rollNumber++) {
-            List<Integer> transitions = new ArrayList<Integer>();
+		if (definition.length % rollKeylength > 0)
+			throw new Exception("Invalid Keysize");
 
-            for (int index = 0; index < TransitionCount; index++)
-                transitions.add((int) definition[rollNumber * rollKeylength + 256 + index]); 
+		int rollCount = definition.length / rollKeylength;
 
-            byte[] singleRoll = new byte[256];
-            for(int index = 0; index < 256; index ++)
-                singleRoll[index] = definition[rollNumber * rollKeylength + index];
+		for (int rollNumber = 0; rollNumber < rollCount; rollNumber++) {
+			List<Integer> transitions = new ArrayList<Integer>();
 
-            Rolls.add(new Roll(singleRoll, transitions));
-        }
+			for (int index = 0; index < transitionCount; index++)
+				transitions.add((int) definition[rollNumber * rollKeylength + 256 + index]);
 
-        for (Roll roll : Rolls)
-            roll.CheckInput(TransitionCount);
-    }
+			byte[] singleRoll = new byte[256];
+			for (int index = 0; index < 256; index++)
+				singleRoll[index] = definition[rollNumber * rollKeylength + index];
 
-    private static void Keygen(int rollCount) throws Exception {
-        
-        if (rollCount < 4)
-            throw new Exception("Not enough rolls.");
+			rolls.add(new Roll(singleRoll, transitions));
+		}
 
-        Random random = new Random();
+		for (Roll roll : rolls)
+			roll.CheckInput(transitionCount);
+	}
 
-        if((new File(KeyFilename)).exists())
-            Files.delete(Paths.get(KeyFilename));
+	private static void Keygen(int rollCount) throws Exception {
 
-        byte[] key = new byte[(256 + TransitionCount) * rollCount] ;
+		if (rollCount < 4)
+			throw new Exception("Not enough rolls.");
 
-        for (int i = 0; i < rollCount; i++) {
-            byte[] transform = new byte[256];
-            for (int j = 0; j <= 255; j++)
-                transform[j] = (byte) j;
+		Random random = new SecureRandom();
 
-            while (!IsTwisted(transform)) {
-                for (int j = 0; j < 256 * 2; j++) {
-                    int rand1 = random.nextInt(256);
-                    int rand2 = random.nextInt(256);
+		byte[] key = new byte[(256 + transitionCount) * rollCount];
 
-                    byte temp = transform[rand1];
-                    transform[rand1] = transform[rand2];
-                    transform[rand2] = temp;
-                }
-            }
+		for (int i = 0; i < rollCount; i++) {
+			byte[] transform = new byte[256];
+			for (int j = 0; j <= 255; j++)
+				transform[j] = (byte) j;
 
-            for (int index = 0; index < 256; index++)
-                key[(256 + TransitionCount) * i + index] = transform[index];
+			while (!IsTwisted(transform)) {
+				for (int j = 0; j < 256 * 2; j++) {
+					int rand1 = random.nextInt(256);
+					int rand2 = random.nextInt(256);
 
-            List<Integer> transitions = new ArrayList<Integer>();
+					byte temp = transform[rand1];
+					transform[rand1] = transform[rand2];
+					transform[rand2] = temp;
+				}
+			}
 
-            while (transitions.size() < TransitionCount) 
-            {
-                int rand = random.nextInt(256);
-                if (!transitions.contains(rand))
-                    transitions.add(rand);
-            }
+			for (int index = 0; index < 256; index++)
+				key[(256 + transitionCount) * i + index] = transform[index];
 
-            for (int index = 0; index < TransitionCount; index++)
-                key[(256 + TransitionCount) * i + 256 + index] = (byte)(int) transitions.get(index);            
-        }
+			List<Integer> transitions = new ArrayList<Integer>();
 
-        FileOutputStream fileOutputStream = new FileOutputStream(KeyFilename);
-        fileOutputStream.write(key);
-        fileOutputStream.close();
+			while (transitions.size() < transitionCount) {
+				int rand = random.nextInt(256);
+				if (!transitions.contains(rand))
+					transitions.add(rand);
+			}
 
-        System.out.println("Keys generated.");
-        Thread.sleep(1000);
-    }
+			for (int index = 0; index < transitionCount; index++)
+				key[(256 + transitionCount) * i + 256 + index] = (byte) (int) transitions.get(index);
+		}
 
-    private static boolean IsTwisted(byte[] trans) {
-        for (int i = 0; i <= 255; i++)
-            if (trans[i] == i)
-                return false;
+		try (FileOutputStream fileOutputStream = new FileOutputStream(keyFilename);) {
+			fileOutputStream.write(key);
+		}
 
-        return true;
-    }
+		System.out.println("Keys generated.");
+	}
+
+	private static boolean IsTwisted(byte[] trans) {
+		for (int i = 0; i <= 255; i++)
+			if (trans[i] == i)
+				return false;
+
+		return true;
+	}
 }
