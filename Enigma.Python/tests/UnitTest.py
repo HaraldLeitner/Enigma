@@ -189,19 +189,19 @@ class MyTestCase(unittest.TestCase):
         file.close()
 
         program = Program(55)
-        program.run_main("keygen", 5, key_file_name)
-        program.run_main("enc", msg_file_name, key_file_name)
+        program.parse_and_run(["keygen", "5", key_file_name])
+        program.parse_and_run(["enc", msg_file_name, key_file_name])
         program2 = Program(55)
-        program2.run_main("dec", msg_file_name + ".enc", key_file_name)
+        program2.parse_and_run(["dec", msg_file_name + ".enc", key_file_name])
 
         file = open(msg_file_name + ".enc.dec", 'rb')
-        decypted = file.read()
+        decrypted = file.read()
         file.close()
 
         for i in range(msg_size):
-            self.assertEqual(msg[i], decypted[i])
+            self.assertEqual(msg[i], decrypted[i])
 
-        self.assertEqual(msg_size, len(decypted))
+        self.assertEqual(msg_size, len(decrypted))
 
 
 if __name__ == '__main__':

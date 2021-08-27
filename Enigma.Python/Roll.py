@@ -25,7 +25,7 @@ class Roll:
                 raise ValueError("Transitions not 1-1 complete")
 
         if len(self._turn_over_indices) != turnover_indices_count:
-            raise ValueError("Wrong TurnOverIndices length ")
+            raise ValueError("Wrong turn_over_indices length ")
 
         for i in range(len(self._turn_over_indices) - 1):
             if self._turn_over_indices[i] == self._turn_over_indices[i + 1]:
