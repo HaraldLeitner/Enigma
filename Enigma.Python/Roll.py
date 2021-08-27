@@ -15,13 +15,10 @@ class Roll:
             raise ValueError("Wrong Transition length ")
 
         for i in range(256):
-            found = 0
             for j in self._transitions:
                 if self._transitions[j] == i:
-                    found = 1
-                    continue
-
-            if not found:
+                    break
+            else:
                 raise ValueError("Transitions not 1-1 complete")
 
         if len(self._turn_over_indices) != turnover_indices_count:

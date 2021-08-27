@@ -7,21 +7,17 @@ class BusinessLogic:
         self._rolls_reverse = rolls.copy()
         self._rolls_reverse.reverse()
 
-    def transform_file(self, infile, outfile, mode):
+    def transform_file(self, infile_name, outfile_name, mode):
         buffer_size = 65536
 
-        in_file = open(infile, 'rb', buffer_size)
-        out_file = open(outfile, 'wb', buffer_size)
+        with open(infile_name, 'rb', buffer_size) as in_file, open(outfile_name, 'wb', buffer_size) as out_file:
 
-        buffer = bytearray(in_file.read(buffer_size))
-
-        while len(buffer):
-            self.transform_buffer(buffer, mode)
-            out_file.write(buffer)
             buffer = bytearray(in_file.read(buffer_size))
 
-        in_file.close()
-        out_file.close()
+            while len(buffer):
+                self.transform_buffer(buffer, mode)
+                out_file.write(buffer)
+                buffer = bytearray(in_file.read(buffer_size))
 
     def transform_buffer(self, buffer, mode):
         if mode == Mode.ENC:

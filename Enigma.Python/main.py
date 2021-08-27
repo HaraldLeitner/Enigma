@@ -2,7 +2,7 @@ import os
 import sys
 from argparse import ArgumentParser
 from configparser import ConfigParser
-from random import randint
+from random import randint, sample
 from time import sleep
 
 from BusinessLogic import BusinessLogic
@@ -13,13 +13,13 @@ from Roll import Roll
 class Program:
     def __init__(self, transition_count=0):
         self._rolls = []
-        self._transitionCount = None
+        self._transition_count = None
         config = ConfigParser()
         config.read("enigma.ini")
         if transition_count < 1:
-            self._transitionCount = config.getint("DEFAULT", "TransitionCount")
+            self._transition_count = config.getint("DEFAULT", "TransitionCount")
         else:
-            self._transitionCount = transition_count
+            self._transition_count = transition_count
 
     def parse_and_run(self, args):
         parser = ArgumentParser(description="Enigma written in python")
@@ -61,43 +61,33 @@ class Program:
         if parser.roll_count < 4:
             raise Exception("Not enough rolls.")
 
-        if os.path.exists(parser.key_file):
-            os.remove(parser.key_file)
-
         key = bytearray()
 
         for i in range(parser.roll_count):
-            transform = bytearray(256)
-            for j in range(256):
-                transform[j] = j
+            transform = bytearray(range(256))
 
             while not self.is_twisted(transform):
                 for j in range(256):
                     rand1 = randint(0, 255)
                     rand2 = randint(0, 255)
-
-                    temp = transform[rand1]
-                    transform[rand1] = transform[rand2]
-                    transform[rand2] = temp
+                    transform[rand1], transform[rand2] = transform[rand2], transform[rand1]
 
             key += transform
 
-            transitions = bytearray()
-            while len(transitions) < self._transitionCount:
-                rand = randint(0, 255)
-                if not transitions.count(rand):
-                    transitions.append(rand)
-
+            transitions = bytearray(
+                sample(range(256), self._transition_count)
+            )
+            
             key += transitions
 
-        file = open(parser.key_file, 'wb')
-        file.write(key)
-        file.close()
+        with open(parser.key_file, 'wb') as fh:
+            fh.write(key)
 
         print("Keys generated.")
         sleep(1)
 
-    def is_twisted(self, trans):
+    @staticmethod
+    def is_twisted(trans):
         for i in range(256):
             if trans[i] == i:
                 return 0
@@ -105,24 +95,23 @@ class Program:
         return 1
 
     def create_rolls(self, keyfile):
-        roll_key_length = 256 + self._transitionCount
-        file = open(keyfile, 'rb')
-        key = file.read()
-        file.close()
+        roll_key_length = 256 + self._transition_count
+
+        with open(keyfile, 'rb') as fh:
+            key = fh.read()
 
         if len(key) % roll_key_length:
             raise Exception('Invalid key_size')
 
         roll_count = int(len(key) / roll_key_length)
 
-        for rollNumber in range(roll_count):
-            self._rolls.append(Roll(key[rollNumber * roll_key_length: rollNumber * roll_key_length + 256],
-                                    key[
-                                    rollNumber * roll_key_length + 256: rollNumber * roll_key_length + 256
-                                                                        + self._transitionCount]))
-
-        for roll in self._rolls:
-            roll.check_input(self._transitionCount)
+        for roll_number in range(roll_count):
+            start = roll_number * roll_key_length
+            middle = roll_number * roll_key_length + 256
+            end = roll_number * roll_key_length + 256 + self._transition_count
+            roll = Roll(key[start: middle], key[middle:end])
+            roll.check_input(self._transition_count)
+            self._rolls.append(roll)
 
 
 if __name__ == '__main__':
