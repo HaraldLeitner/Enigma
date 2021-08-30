@@ -77,7 +77,7 @@ class Program:
             transitions = bytearray(
                 sample(range(256), self._transition_count)
             )
-            
+
             key += transitions
 
         with open(parser.key_file, 'wb') as fh:

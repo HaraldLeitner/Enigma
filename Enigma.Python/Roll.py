@@ -36,4 +36,4 @@ class Roll:
 
     def roll_on(self):
         self._position = (self._position + 1) & 0xff
-        return self._turn_over_indices.count(self._position)
+        return self._position in self._turn_over_indices
